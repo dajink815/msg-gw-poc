@@ -9,11 +9,12 @@ import com.uangel.ccaas.msggw.message.IncomingMessage;
 import com.uangel.ccaas.msggw.message.type.AiBotMsgType;
 import com.uangel.ccaas.msggw.session.SessionInfo;
 import com.uangel.ccaas.msggw.type.ChatType;
+import com.uangel.ccaas.msggw.type.RcvMsgType;
 import io.grpc.stub.StreamObserver;
 
 public class BotStartReq extends IncomingMessage {
 
-    public void handle(Message request, int rcvType, StreamObserver<Message> responseObserver) {
+    public void handle(Message request, RcvMsgType rcvType, StreamObserver<Message> responseObserver) {
 
         com.uangel.ccaas.aibotmsg.BotStartReq botTalkReq = request.getStartReq();
 

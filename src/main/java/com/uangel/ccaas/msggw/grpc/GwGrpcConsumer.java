@@ -1,7 +1,13 @@
 package com.uangel.ccaas.msggw.grpc;
 
 import com.uangel.ccaas.aibotmsg.Message;
+import com.uangel.ccaas.msggw.message.handler.IncomingHandler;
+import com.uangel.ccaas.msggw.message.util.MessageParser;
+import com.uangel.ccaas.msggw.observer.ObserverInfo;
+import com.uangel.ccaas.msggw.observer.ObserverManager;
+import com.uangel.ccaas.msggw.type.RcvMsgType;
 import com.uangel.ccaas.msggw.util.PrintMsgModule;
+import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 
@@ -28,11 +34,19 @@ public class GwGrpcConsumer {
             executor.scheduleWithFixedDelay(() -> {
                 try {
                     while (true) {
-                        Message data = queue.poll();
-                        if (data == null) break;
-                        // todo handle
-                        // handleMessage(data);
-                        log.debug("[MSG] consume: {}", data);
+                        Message request = queue.poll();
+                        if (request == null) break;
+                        // handle
+                        String msgType = MessageParser.getMsgType(request);
+                        String tId = MessageParser.getTid(request);
+                        log.debug("[MSG] consume: {} (tId:{})", msgType, tId);
+
+                        ObserverInfo observerInfo = ObserverManager.getInstance().deleteObserverInfo(tId);
+                        if (observerInfo == null) {
+
+                            return;
+                        }
+                        IncomingHandler.getInstance().handle(request, RcvMsgType.GRPC, observerInfo.getResponseObserver());
                     }
                 } catch (Exception e) {
                     log.warn("Err Occurs while handling gRPC Message", e);
@@ -41,10 +55,13 @@ public class GwGrpcConsumer {
         }
     }
 
-    public void consume(Message msg) {
+    public void consume(Message msg, StreamObserver<Message> responseObserver) {
         try {
             if (!this.queue.offer(msg)) {
                 log.warn("gRPC RCV Queue full. Drop message.");
+            } else {
+                String tId = MessageParser.getTid(msg);
+                ObserverManager.getInstance().putObserverInfo(tId, responseObserver);
             }
         } catch (Exception e) {
             log.warn("Err Occurs", e);

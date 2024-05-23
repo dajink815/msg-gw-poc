@@ -1,5 +1,6 @@
 package com.uangel.ccaas.msggw.session;
 
+import com.uangel.ccaas.msggw.type.RcvMsgType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,7 +24,7 @@ public class SessionManager {
     }
 
     // SessionInfo 생성
-    public SessionInfo createSessionInfo(String callId, int rcvType) {
+    public SessionInfo createSessionInfo(String callId, RcvMsgType rcvType) {
         if (callId == null) return null;
         if (sessionMaps.containsKey(callId)) {
             log.warn("SessionInfo [{}] already exist.", callId);

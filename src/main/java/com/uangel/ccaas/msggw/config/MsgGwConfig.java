@@ -1,5 +1,6 @@
 package com.uangel.ccaas.msggw.config;
 
+import com.uangel.ccaas.msggw.type.SendMsgType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -68,12 +69,14 @@ public class MsgGwConfig extends IniConfig {
     private String chatBotUrl;
     @ConfigValue("AI.SEND_TYPE")
     private int sendType; // Send Protocol Type - 0: HTTP, 1: gRPC
+    private SendMsgType sendMsgType;
 
 
     @Override
     public void afterFieldSetting() {
         ValidationUtil.validCheck(this);
         this.testMode = checkTrue(testModeStr);
+        this.sendMsgType = SendMsgType.getType(sendType);
     }
 
     public boolean checkTrue(String str) {
