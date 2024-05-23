@@ -10,12 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 public class SessionInfo {
 
     @NonNull
-    private final String callId;
+    private final String sessionId;
     private final RcvMsgType rcvType;  // 0: RMQ, 1: gRPC
     private final long startTime;
+    private String botId;
+    private String talkTid;
 
-    public SessionInfo(@NonNull String callId, RcvMsgType rcvType) {
-        this.callId = callId;
+    public SessionInfo(@NonNull String sessionId, RcvMsgType rcvType) {
+        this.sessionId = sessionId;
         this.rcvType = rcvType;
         this.startTime = System.currentTimeMillis();
     }

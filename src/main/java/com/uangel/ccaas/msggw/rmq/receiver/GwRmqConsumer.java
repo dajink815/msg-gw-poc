@@ -2,7 +2,6 @@ package com.uangel.ccaas.msggw.rmq.receiver;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.uangel.ccaas.aibotmsg.Message;
-import com.uangel.ccaas.msggw.message.AiwfCallBack;
 import com.uangel.ccaas.msggw.message.handler.IncomingHandler;
 import com.uangel.ccaas.msggw.rmq.GwRmqManager;
 import com.uangel.ccaas.msggw.service.AppInstance;

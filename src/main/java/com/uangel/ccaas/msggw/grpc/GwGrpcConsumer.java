@@ -3,7 +3,6 @@ package com.uangel.ccaas.msggw.grpc;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.uangel.ccaas.aibotmsg.Message;
 import com.uangel.ccaas.msggw.config.MsgGwConfig;
-import com.uangel.ccaas.msggw.message.AiwfCallBack;
 import com.uangel.ccaas.msggw.message.handler.IncomingHandler;
 import com.uangel.ccaas.msggw.message.util.MessageParser;
 import com.uangel.ccaas.msggw.service.AppInstance;

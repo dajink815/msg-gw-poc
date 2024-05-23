@@ -1,9 +1,6 @@
-package com.uangel.ccaas.msggw.message.aiwf;
+package com.uangel.ccaas.msggw.message.aiwf.outgoing;
 
 import com.uangel.ccaas.aibotmsg.Message;
-import com.uangel.ccaas.msggw.message.handler.GrpcHandler;
-import com.uangel.ccaas.msggw.message.handler.OutgoingHandler;
-import com.uangel.ccaas.msggw.message.handler.RmqHandler;
 import com.uangel.ccaas.msggw.type.RcvMsgType;
 import io.grpc.stub.StreamObserver;
 

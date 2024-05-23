@@ -7,18 +7,24 @@ import com.uangel.ccaas.msggw.service.AppInstance;
 import com.uangel.ccaas.msggw.util.DateFormatUtil;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.UUID;
+
 @Slf4j
-public class AiBotOutMessage {
+public class AiwfOutMessage {
 
     private final Header header;
 
     private final Message body;
 
-    public AiBotOutMessage(AiBotMsgType type, String tId, String botId, Object o) {
+    public AiwfOutMessage(AiBotMsgType type, String botId, Object o) {
+        this(type, UUID.randomUUID().toString(), botId, o, AppInstance.getInstance().getConfig().getMsgGwQueue());
+    }
+
+    public AiwfOutMessage(AiBotMsgType type, String tId, String botId, Object o) {
         this(type, tId, botId, o, AppInstance.getInstance().getConfig().getMsgGwQueue());
     }
 
-    public AiBotOutMessage(AiBotMsgType type, String tId, String botId, Object o, String msgFrom) {
+    public AiwfOutMessage(AiBotMsgType type, String tId, String botId, Object o, String msgFrom) {
         this.header = Header.newBuilder()
                 .setType(type.name())
                 .setTId(tId)
@@ -42,8 +48,10 @@ public class AiBotOutMessage {
             message = Message.newBuilder().setStopReq(bodyObj).build();
         } else if (o instanceof BotStopRes bodyObj) {
             message = Message.newBuilder().setStopRes(bodyObj).build();
+        } else if (o instanceof AiMessage bodyObj) {
+            message = Message.newBuilder().setAiMessage(bodyObj).build();
         } else {
-            log.warn("AiBotOutMessage.buildBody - Message type mismatch\n" + "[{}]", o);
+            log.warn("AiwfOutMessage.buildBody - Message type mismatch\n" + "[{}]", o);
         }
 
         return message;

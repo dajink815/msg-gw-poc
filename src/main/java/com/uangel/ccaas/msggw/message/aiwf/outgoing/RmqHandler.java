@@ -1,4 +1,4 @@
-package com.uangel.ccaas.msggw.message.handler;
+package com.uangel.ccaas.msggw.message.aiwf.outgoing;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.uangel.ccaas.aibotmsg.Message;

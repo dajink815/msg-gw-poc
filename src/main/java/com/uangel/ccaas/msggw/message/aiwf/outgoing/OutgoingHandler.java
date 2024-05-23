@@ -1,4 +1,4 @@
-package com.uangel.ccaas.msggw.message.handler;
+package com.uangel.ccaas.msggw.message.aiwf.outgoing;
 
 import com.uangel.ccaas.aibotmsg.Message;
 import com.uangel.ccaas.msggw.config.MsgGwConfig;

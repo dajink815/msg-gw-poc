@@ -24,15 +24,15 @@ public class SessionManager {
     }
 
     // SessionInfo 생성
-    public SessionInfo createSessionInfo(String callId, RcvMsgType rcvType) {
-        if (callId == null) return null;
-        if (sessionMaps.containsKey(callId)) {
-            log.warn("SessionInfo [{}] already exist.", callId);
+    public SessionInfo createSessionInfo(String sessionId, RcvMsgType rcvType) {
+        if (sessionId == null) return null;
+        if (sessionMaps.containsKey(sessionId)) {
+            log.warn("SessionInfo [{}] already exist.", sessionId);
             return null;
         }
-        return sessionMaps.computeIfAbsent(callId, sessionInfo -> {
-            SessionInfo newInfo = new SessionInfo(callId, rcvType);
-            log.info("SessionInfo [{}] Create", callId);
+        return sessionMaps.computeIfAbsent(sessionId, sessionInfo -> {
+            SessionInfo newInfo = new SessionInfo(sessionId, rcvType);
+            log.info("SessionInfo [{}] Create", sessionId);
             return newInfo;
         });
     }
