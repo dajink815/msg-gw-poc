@@ -1,10 +1,12 @@
 package com.uangel.ccaas.msggw.grpc;
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.uangel.ccaas.aibotmsg.Message;
+import com.uangel.ccaas.msggw.config.MsgGwConfig;
+import com.uangel.ccaas.msggw.message.AiwfCallBack;
 import com.uangel.ccaas.msggw.message.handler.IncomingHandler;
 import com.uangel.ccaas.msggw.message.util.MessageParser;
-import com.uangel.ccaas.msggw.observer.ObserverInfo;
-import com.uangel.ccaas.msggw.observer.ObserverManager;
+import com.uangel.ccaas.msggw.service.AppInstance;
 import com.uangel.ccaas.msggw.type.RcvMsgType;
 import com.uangel.ccaas.msggw.util.PrintMsgModule;
 import io.grpc.stub.StreamObserver;
@@ -19,8 +21,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class GwGrpcConsumer {
     private final ScheduledExecutorService executor;
-    private final ArrayBlockingQueue<Message> queue;
-
+    private final ArrayBlockingQueue<GrpcMsgInfo> queue;
 
     public GwGrpcConsumer(int consumerCount, int grpcBufferCount) {
         executor = Executors.newScheduledThreadPool(consumerCount, new BasicThreadFactory.Builder()
@@ -34,19 +35,14 @@ public class GwGrpcConsumer {
             executor.scheduleWithFixedDelay(() -> {
                 try {
                     while (true) {
-                        Message request = queue.poll();
-                        if (request == null) break;
+                        GrpcMsgInfo grpcMsgInfo = queue.poll();
+                        if (grpcMsgInfo == null) break;
                         // handle
+                        Message request = grpcMsgInfo.getRequest();
                         String msgType = MessageParser.getMsgType(request);
                         String tId = MessageParser.getTid(request);
                         log.debug("[MSG] consume: {} (tId:{})", msgType, tId);
-
-                        ObserverInfo observerInfo = ObserverManager.getInstance().deleteObserverInfo(tId);
-                        if (observerInfo == null) {
-
-                            return;
-                        }
-                        IncomingHandler.getInstance().handle(request, RcvMsgType.GRPC, observerInfo.getResponseObserver());
+                        IncomingHandler.getInstance().handle(request, RcvMsgType.GRPC, grpcMsgInfo.getAiwfCallBack());
                     }
                 } catch (Exception e) {
                     log.warn("Err Occurs while handling gRPC Message", e);
@@ -55,13 +51,23 @@ public class GwGrpcConsumer {
         }
     }
 
-    public void consume(Message msg, StreamObserver<Message> responseObserver) {
+    public void consume(Message request, StreamObserver<Message> responseObserver) {
         try {
-            if (!this.queue.offer(msg)) {
+            GrpcMsgInfo grpcMsgInfo = new GrpcMsgInfo(request);
+            grpcMsgInfo.setAiwfCallBack(response -> {
+                try {
+                    responseObserver.onNext(response);
+                    responseObserver.onCompleted();
+                    MsgGwConfig config = AppInstance.getInstance().getConfig();
+                    String target = config.getGrpcTargetIp() + ":" + config.getGrpcTargetPort();
+                    PrintMsgModule.printSendLog(target, response);
+                } catch (InvalidProtocolBufferException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            if (!this.queue.offer(grpcMsgInfo)) {
                 log.warn("gRPC RCV Queue full. Drop message.");
-            } else {
-                String tId = MessageParser.getTid(msg);
-                ObserverManager.getInstance().putObserverInfo(tId, responseObserver);
             }
         } catch (Exception e) {
             log.warn("Err Occurs", e);

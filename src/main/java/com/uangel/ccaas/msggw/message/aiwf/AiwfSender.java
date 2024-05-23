@@ -4,7 +4,6 @@ import com.uangel.ccaas.aibotmsg.Message;
 import com.uangel.ccaas.msggw.message.handler.GrpcHandler;
 import com.uangel.ccaas.msggw.message.handler.OutgoingHandler;
 import com.uangel.ccaas.msggw.message.handler.RmqHandler;
-import com.uangel.ccaas.msggw.session.SessionInfo;
 import com.uangel.ccaas.msggw.type.RcvMsgType;
 import io.grpc.stub.StreamObserver;
 
@@ -21,9 +20,9 @@ public class AiwfSender {
         return aiwfSender;
     }
 
-    public void replyMsg(SessionInfo sessionInfo, Message response, StreamObserver<Message> responseObserver) {
+    public void replyMsg(Message response, RcvMsgType rcvType, StreamObserver<Message> responseObserver) {
         OutgoingHandler outgoingHandler;
-        if (RcvMsgType.RMQ.equals(sessionInfo.getRcvType())) {
+        if (RcvMsgType.RMQ.equals(rcvType)) {
             outgoingHandler = new RmqHandler();
         } else {
             outgoingHandler = new GrpcHandler();

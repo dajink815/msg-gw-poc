@@ -49,12 +49,13 @@ public class SessionManager {
     }
 
     // SessionInfo 삭제
-    public void deleteSessionInfo(String callId) {
-        if (callId == null) return;
+    public SessionInfo deleteSessionInfo(String callId) {
+        if (callId == null) return null;
         SessionInfo removedInfo = sessionMaps.remove(callId);
         if (removedInfo != null) {
             log.info("SessionInfo [{}] Removed", callId);
         }
+        return removedInfo;
     }
 
 }

@@ -14,7 +14,6 @@ public class AiBotServiceImpl extends AiBotServiceGrpc.AiBotServiceImplBase {
         this.gwGrpcConsumer = gwGrpcConsumer;
     }
 
-    // todo StreamObserver 전달
     @Override
     public void botStart(Message request, StreamObserver<Message> responseObserver) {
         try {

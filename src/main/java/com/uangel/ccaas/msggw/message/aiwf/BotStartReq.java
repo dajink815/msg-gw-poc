@@ -5,6 +5,7 @@ import com.uangel.ccaas.aibotmsg.BotStartRes;
 import com.uangel.ccaas.aibotmsg.Header;
 import com.uangel.ccaas.aibotmsg.Message;
 import com.uangel.ccaas.msggw.message.AiBotOutMessage;
+import com.uangel.ccaas.msggw.message.AiwfCallBack;
 import com.uangel.ccaas.msggw.message.IncomingMessage;
 import com.uangel.ccaas.msggw.message.type.AiBotMsgType;
 import com.uangel.ccaas.msggw.session.SessionInfo;
@@ -15,28 +16,59 @@ import io.grpc.stub.StreamObserver;
 public class BotStartReq extends IncomingMessage {
 
     public void handle(Message request, RcvMsgType rcvType, StreamObserver<Message> responseObserver) {
-
         com.uangel.ccaas.aibotmsg.BotStartReq botTalkReq = request.getStartReq();
-
-        // check SessionInfo
 
         String sessionId = botTalkReq.getSessionId();
         SessionInfo sessionInfo = sessionManager.createSessionInfo(sessionId, rcvType);
 
+        // check SessionInfo
+        if (sessionInfo == null) {
+            // fail response
+        }
+
         Header header = request.getHeader();
-        String msgFrom = header.getMsgFrom();
 
         // build response
         BotStartRes botStartRes = BotStartRes.newBuilder()
-                .setSessionId("AI_BOT_ID")
+                .setSessionId(sessionId)
                 .setType(ChatType.TALK.getValue())
+                //.setCode()
+                //.setReason()
                 // TtsMessages
-                .addAnswer(buildTtsMessage("테스트입니다 - Start"))
-                .addAnswer(buildTtsMessage("두번째 테스트입니다 - Start"))
+                .addAnswer(buildTtsMessage("Start 메시지"))
+                .addAnswer(buildTtsMessage("두번째 Start 메시지"))
                 .build();
-        Message response = new AiBotOutMessage(AiBotMsgType.BOT_START_RES, header.getTId(), header.getBotId(), botStartRes, msgFrom).build();
+        Message response = new AiBotOutMessage(AiBotMsgType.BOT_START_RES, header.getTId(), header.getBotId(), botStartRes).build();
 
-        aiwfSender.replyMsg(sessionInfo, response, responseObserver);
+        aiwfSender.replyMsg(response, rcvType, responseObserver);
 
+    }
+
+    public void handle(Message request, RcvMsgType rcvType, AiwfCallBack callBack) {
+        com.uangel.ccaas.aibotmsg.BotStartReq botTalkReq = request.getStartReq();
+
+        String sessionId = botTalkReq.getSessionId();
+        SessionInfo sessionInfo = sessionManager.createSessionInfo(sessionId, rcvType);
+
+        // check SessionInfo
+        if (sessionInfo == null) {
+            // fail response
+        }
+
+        Header header = request.getHeader();
+
+        // build response
+        BotStartRes botStartRes = BotStartRes.newBuilder()
+                .setSessionId(sessionId)
+                .setType(ChatType.TALK.getValue())
+                //.setCode()
+                //.setReason()
+                // TtsMessages
+                .addAnswer(buildTtsMessage("Start 메시지"))
+                .addAnswer(buildTtsMessage("두번째 Start 메시지"))
+                .build();
+        Message response = new AiBotOutMessage(AiBotMsgType.BOT_START_RES, header.getTId(), header.getBotId(), botStartRes).build();
+
+        callBack.reply(response);
     }
 }
