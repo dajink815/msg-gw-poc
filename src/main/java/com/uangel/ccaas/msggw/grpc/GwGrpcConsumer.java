@@ -6,7 +6,6 @@ import com.uangel.ccaas.msggw.config.MsgGwConfig;
 import com.uangel.ccaas.msggw.message.handler.IncomingHandler;
 import com.uangel.ccaas.msggw.message.util.MessageParser;
 import com.uangel.ccaas.msggw.service.AppInstance;
-import com.uangel.ccaas.msggw.type.RcvMsgType;
 import com.uangel.ccaas.msggw.util.PrintMsgModule;
 import io.grpc.stub.StreamObserver;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +40,7 @@ public class GwGrpcConsumer {
                         String msgType = MessageParser.getMsgType(request);
                         String tId = MessageParser.getTid(request);
                         log.debug("[MSG] consume: {} (tId:{})", msgType, tId);
-                        IncomingHandler.getInstance().handle(request, RcvMsgType.GRPC, grpcMsgInfo.getAiwfCallBack());
+                        IncomingHandler.getInstance().handle(request, grpcMsgInfo.getAiwfCallBack());
                     }
                 } catch (Exception e) {
                     log.warn("Err Occurs while handling gRPC Message", e);
@@ -52,6 +51,7 @@ public class GwGrpcConsumer {
 
     public void consume(Message request, StreamObserver<Message> responseObserver) {
         try {
+            // GrpcMsgInfo - Message & AiwfCallBack
             GrpcMsgInfo grpcMsgInfo = new GrpcMsgInfo(request);
             grpcMsgInfo.setAiwfCallBack(response -> {
                 try {
@@ -65,6 +65,7 @@ public class GwGrpcConsumer {
                 }
             });
 
+            // 메시지 큐에 주입 <- GrpcMsgInfo
             if (!this.queue.offer(grpcMsgInfo)) {
                 log.warn("gRPC RCV Queue full. Drop message.");
             }

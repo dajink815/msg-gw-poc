@@ -5,7 +5,6 @@ import com.uangel.ccaas.msggw.message.AiwfCallBack;
 import com.uangel.ccaas.msggw.message.IncomingMessage;
 import com.uangel.ccaas.msggw.message.ai.AiMsgSender;
 import com.uangel.ccaas.msggw.session.SessionInfo;
-import com.uangel.ccaas.msggw.type.RcvMsgType;
 
 public class BotTalkReq extends IncomingMessage {
     private final int muteType = 0;
@@ -13,7 +12,7 @@ public class BotTalkReq extends IncomingMessage {
     public BotTalkReq() {
     }
 
-    public void handle(Message request, RcvMsgType rcvType, AiwfCallBack callBack) {
+    public void handle(Message request, AiwfCallBack callBack) {
 
         com.uangel.ccaas.aibotmsg.BotTalkReq botTalkReq = request.getTalkReq();
         // check SessionInfo Null

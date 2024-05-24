@@ -8,14 +8,13 @@ import com.uangel.ccaas.msggw.message.AiwfCallBack;
 import com.uangel.ccaas.msggw.message.IncomingMessage;
 import com.uangel.ccaas.msggw.message.type.AiBotMsgType;
 import com.uangel.ccaas.msggw.session.SessionInfo;
-import com.uangel.ccaas.msggw.type.RcvMsgType;
 
 public class BotStopReq extends IncomingMessage {
 
     public BotStopReq() {
     }
 
-    public void handle(Message request, RcvMsgType rcvType, AiwfCallBack callBack) {
+    public void handle(Message request, AiwfCallBack callBack) {
         com.uangel.ccaas.aibotmsg.BotStopReq botStopReq = request.getStopReq();
 
         String sessionId = botStopReq.getSessionId();

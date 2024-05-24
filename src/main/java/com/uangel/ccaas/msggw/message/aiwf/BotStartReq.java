@@ -9,18 +9,17 @@ import com.uangel.ccaas.msggw.message.IncomingMessage;
 import com.uangel.ccaas.msggw.message.type.AiBotMsgType;
 import com.uangel.ccaas.msggw.session.SessionInfo;
 import com.uangel.ccaas.msggw.type.ChatType;
-import com.uangel.ccaas.msggw.type.RcvMsgType;
 
 public class BotStartReq extends IncomingMessage {
 
     public BotStartReq() {
     }
 
-    public void handle(Message request, RcvMsgType rcvType, AiwfCallBack callBack) {
+    public void handle(Message request, AiwfCallBack callBack) {
         com.uangel.ccaas.aibotmsg.BotStartReq botTalkReq = request.getStartReq();
 
         String sessionId = botTalkReq.getSessionId();
-        SessionInfo sessionInfo = sessionManager.createSessionInfo(sessionId, rcvType);
+        SessionInfo sessionInfo = sessionManager.createSessionInfo(sessionId);
 
         // check SessionInfo
         if (sessionInfo == null) {

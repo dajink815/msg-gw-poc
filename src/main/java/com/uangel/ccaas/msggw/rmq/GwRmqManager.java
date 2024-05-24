@@ -17,6 +17,7 @@ public class GwRmqManager {
     private final RmqManager rmqManager = RmqManager.getInstance();
     @Getter
     private RmqModule rmqModule;
+    private GwRmqConsumer gwRmqConsumer;
 
     private GwRmqManager() {
         // Nothing
@@ -55,9 +56,9 @@ public class GwRmqManager {
 
     private void startServer() {
         try {
-            GwRmqConsumer aiwfConsumer = new GwRmqConsumer(config.getRmqThreadSize(), config.getRmqConsumerQueueSize());
+            gwRmqConsumer = new GwRmqConsumer(config.getRmqThreadSize(), config.getRmqConsumerQueueSize());
             log.debug("RMQ ConsumerCount {}, bufferCount {}", config.getRmqThreadSize(), config.getRmqConsumerQueueSize());
-            rmqManager.start(aiwfConsumer);
+            rmqManager.start(gwRmqConsumer);
         } catch (Exception e) {
             log.warn("Failed to startRmqServer", e);
         }
@@ -67,6 +68,7 @@ public class GwRmqManager {
     // 서버, 클라이언트 연결 해제
     public void stopRmq() {
         if (rmqManager != null) rmqManager.stop();
+        if (gwRmqConsumer != null) gwRmqConsumer.close();
     }
 
 

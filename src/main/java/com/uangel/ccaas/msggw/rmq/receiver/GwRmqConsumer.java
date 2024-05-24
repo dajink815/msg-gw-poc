@@ -5,7 +5,6 @@ import com.uangel.ccaas.aibotmsg.Message;
 import com.uangel.ccaas.msggw.message.handler.IncomingHandler;
 import com.uangel.ccaas.msggw.rmq.GwRmqManager;
 import com.uangel.ccaas.msggw.service.AppInstance;
-import com.uangel.ccaas.msggw.type.RcvMsgType;
 import com.uangel.ccaas.msggw.util.PrintMsgModule;
 import lombok.extern.slf4j.Slf4j;
 import umedia.rmq.RmqModule;
@@ -29,7 +28,7 @@ public class GwRmqConsumer extends umedia.rmq.RmqConsumer {
                 return;
             }
 
-            IncomingHandler.getInstance().handle(request, RcvMsgType.RMQ, response -> {
+            IncomingHandler.getInstance().handle(request, response -> {
                 try {
                     if (response != null) {
                         String target = AppInstance.getInstance().getConfig().getAiwfQueue();

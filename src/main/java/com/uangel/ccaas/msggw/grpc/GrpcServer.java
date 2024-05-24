@@ -15,9 +15,10 @@ public class GrpcServer {
     private final MsgGwConfig config = AppInstance.getInstance().getConfig();
     private final int port = config.getGrpcServerPort();
     private final Server server;
+    private final GwGrpcConsumer gwGrpcConsumer;
 
     private GrpcServer() {
-        GwGrpcConsumer gwGrpcConsumer = new GwGrpcConsumer(config.getGrpcThreadSize(), config.getGrpcConsumerQueueSize());
+        gwGrpcConsumer = new GwGrpcConsumer(config.getGrpcThreadSize(), config.getGrpcConsumerQueueSize());
         AiBotServiceImpl aiBotService = new AiBotServiceImpl(gwGrpcConsumer);
         server = ServerBuilder.forPort(port)
                 // add Service
@@ -38,5 +39,6 @@ public class GrpcServer {
 
     public void stop() throws InterruptedException {
         server.shutdown().awaitTermination(30, TimeUnit.SECONDS);
+        if (gwGrpcConsumer != null) gwGrpcConsumer.close();
     }
 }
